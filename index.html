@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<form id="form">
+    <input  type="text" name="title"id="title">
+    <label for="title">Title</label>
+    <input type="textarea" name="content" id="content" >
+    <label for="content">Content</label>
+    <input type="submit" value="Add Note" class="btn">
+    <input type="color" id="bg-color" name="bg-color" value="#494949">
+    <label for="bg-color">Background color</label>
+    <!-- <input type="color" id="title-color" name="title-color" value="#fff">
+    <label for="title-color">Title color</label>
+    <input type="color" id="text-color" name="text-color" value="#fff">
+    <label for="text-color">Text color</label> -->
+</form>
+<div class="collection"></div>
+
+
+    <script>
+ 
+
+
+
+const form = document.querySelector('#form');
+const noteList = document.querySelector('.collection');
+let title=document.querySelector('#title');
+let content=document.querySelector('#content');
+let bgColor=document.querySelector('#bg-color');
+let submit=document.querySelector('.btn');
+let i=0;
+let notes=[];
+
+loadEventListerners();
+
+function loadEventListerners(){
+    document.addEventListener("DOMContentLoaded", getNotes);
+    form.addEventListener('submit',newNote);
+}
+
+function getNotes(){
+    let notes;
+    if(localStorage.getItem('notes')===null){
+       notes=[];
+    }
+    else{
+        notes=JSON.parse(localStorage.getItem('notes'));
+    }
+    notes.forEach(function(note){
+const div= document.createElement('div');
+div.className='collection-item';
+const ttl=document.createElement('h5');
+ttl.className='item-title';
+ttl.appendChild(document.createTextNode(note['title']));
+div.appendChild(ttl);
+const text=document.createElement('div');
+text.className='item-text';
+text.appendChild(document.createTextNode(note['content']));
+div.appendChild(text);
+noteList.appendChild(div);
+div.style.background=note['color'];
+
+    })
+  
+}
+
+
+
+
+
+
+function newNote(e){
+const div= document.createElement('div');
+div.className='collection-item';
+const ttl=document.createElement('h5');
+ttl.className='item-title';
+ttl.appendChild(document.createTextNode(title.value));
+div.appendChild(ttl);
+const text=document.createElement('div');
+text.className='item-text';
+text.appendChild(document.createTextNode(content.value));
+div.appendChild(text);
+noteList.appendChild(div);
+div.style.background=bgColor.value;
+
+
+
+notes.push({title: title.value, content:content.value,color:bgColor.value}); 
+
+storeNoteInLocalStorage(notes[i]);
+title.value='';
+content.value='';
+i++;
+e.preventDefault();
+}
+
+
+
+
+
+
+function storeNoteInLocalStorage(note){
+    let notes;
+    if(localStorage.getItem('notes')===null){
+       notes=[];
+    }
+    else{
+        notes=JSON.parse(localStorage.getItem('notes'));
+    }
+    notes.push(note);
+    localStorage.setItem('notes',JSON.stringify(notes));
+}
+
+
+
+    </script>
+</body>
+</html>
