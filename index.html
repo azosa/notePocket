@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
     <title>Document</title>
 </head>
 <body>
@@ -20,9 +22,9 @@
     <input type="color" id="text-color" name="text-color" value="#fff">
     <label for="text-color">Text color</label> -->
 </form>
-<div class="collection"></div>
+<div class="collection gg"></div>
 
-
+<button class="clear-notes">Clear Tasks</button>
     <script>
  
 
@@ -30,31 +32,41 @@
 
 const form = document.querySelector('#form');
 const noteList = document.querySelector('.collection');
+const noteList2 = document.querySelector('.gg');
+const clearBtn = document.querySelector('.clear-notes');
 let title=document.querySelector('#title');
 let content=document.querySelector('#content');
 let bgColor=document.querySelector('#bg-color');
 let submit=document.querySelector('.btn');
 let i=0;
+
 let notes=[];
+let titleRem; 
+let textRem;
 
 loadEventListerners();
 
 function loadEventListerners(){
-    document.addEventListener("DOMContentLoaded", getNotes);
+    document.addEventListener('DOMContentLoaded', getNotes);
     form.addEventListener('submit',newNote);
+    noteList.addEventListener('click',removeNote);
+    noteList2.addEventListener('click',pinnNote);
+    clearBtn.addEventListener('click', clearNotes);
 }
 
+
+//get notes from LS
 function getNotes(){
-    let notes;
+    let notes1;
     if(localStorage.getItem('notes')===null){
-       notes=[];
+       notes1=[];
     }
     else{
-        notes=JSON.parse(localStorage.getItem('notes'));
+        notes1=JSON.parse(localStorage.getItem('notes'));
     }
-    notes.forEach(function(note){
+    notes1.forEach(function(note){
 const div= document.createElement('div');
-div.className='collection-item';
+div.className=`collection-item ${note['ID']}`;
 const ttl=document.createElement('h5');
 ttl.className='item-title';
 ttl.appendChild(document.createTextNode(note['title']));
@@ -63,10 +75,20 @@ const text=document.createElement('div');
 text.className='item-text';
 text.appendChild(document.createTextNode(note['content']));
 div.appendChild(text);
+const link = document.createElement('a');
+link.className = 'delete-item';
+link.innerHTML='<i class="fas fa-times"></i>';
+div.appendChild(link);
+const pinn =document.createElement('a');
+pinn.className="pinn-note";
+pinn.innerHTML='<i class="far fa-star"></i>';
+div.appendChild(pinn);
 noteList.appendChild(div);
 div.style.background=note['color'];
 
+notes.push({title: note['title'], content:note['content'],color:note['color'], ID:note['ID'],pinned:note['pinned']});
     })
+
   
 }
 
@@ -77,7 +99,7 @@ div.style.background=note['color'];
 
 function newNote(e){
 const div= document.createElement('div');
-div.className='collection-item';
+div.className=`collection-item item${i}`;
 const ttl=document.createElement('h5');
 ttl.className='item-title';
 ttl.appendChild(document.createTextNode(title.value));
@@ -86,12 +108,20 @@ const text=document.createElement('div');
 text.className='item-text';
 text.appendChild(document.createTextNode(content.value));
 div.appendChild(text);
+const link = document.createElement('a');
+link.className = 'delete-item';
+link.innerHTML='<i class="fas fa-times"></i>';
+div.appendChild(link);
+const pinn =document.createElement('a');
+pinn.className="pinn-note";
+pinn.innerHTML='<i class="far fa-star"></i>';
+div.appendChild(pinn);
 noteList.appendChild(div);
 div.style.background=bgColor.value;
 
 
 
-notes.push({title: title.value, content:content.value,color:bgColor.value}); 
+notes.push({title: title.value, content:content.value,color:bgColor.value, ID:'item'+i,pinned:false});
 
 storeNoteInLocalStorage(notes[i]);
 title.value='';
@@ -117,8 +147,70 @@ function storeNoteInLocalStorage(note){
     localStorage.setItem('notes',JSON.stringify(notes));
 }
 
+function pinnNote(e){
+    if(!notes['pinned']){
+       
+    if(e.target.parentElement.parentElement.classList.contains('collection-item')){
+       
+   let first = e.target.parentElement.parentElement;
+   let parent = first.parentNode;
+   parent.insertBefore(first, parent.firstChild);
+    e.target.parentElement.innerHTML='<i class="fas fa-star"></i>';
+   }
+   
+    notes['pinned']=true;
+   }
+   else{
+   
+   let first = e.target.parentElement.parentElement;
+   let parent = first.parentNode;
+   parent.insertBefore(first, parent.lastChild);
+    e.target.parentElement.innerHTML='<i class="far fa-star"></i>';
+   notes['pinned']=false;
+   }
+   }
+
+function removeNote(e){
+if(e.target.parentElement.classList.contains('delete-item')){
+      titleRem=e.target.parentElement.parentElement.classList;
+    if(confirm('re you sure?')){    
+    e.target.parentElement.parentElement.remove(); 
+    removeNoteFromLocalStorage(titleRem);
+    }
+
+   
+}
+}
+function removeNoteFromLocalStorage(titleRem){
+    let notes;
+    if(localStorage.getItem('notes')===null){
+        notes=[];
+    }
+    else{
+        notes=JSON.parse(localStorage.getItem('notes'));
+    }
+
+    notes.forEach(function(note,index){
+        if(titleRem.contains(note['ID'])){
+    notes.splice(index,1)
+        }
+    });
+    localStorage.setItem('notes',JSON.stringify(notes));
+}
+
+function clearNotes(){
+    while(noteList.firstChild){
+        noteList.removeChild(noteList.firstChild);
+    }
+
+    clearNotesFromLocalStorage();
+
+}
 
 
+function clearNotesFromLocalStorage(){
+    localStorage.clear();
+}
     </script>
 </body>
 </html>

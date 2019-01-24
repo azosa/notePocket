@@ -1,0 +1,7 @@
+.collection{
+    display: flex;
+    flex-direction: column;
+}
+.collection-item{
+    position: relative;
+}
