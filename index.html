@@ -9,14 +9,14 @@
     <title>Document</title>
 </head>
 <body>
-<form id="form">
-    <input  type="text" name="title"id="title">
-    <label for="title">Title</label>
-    <input type="textarea" name="content" id="content" >
-    <label for="content">Content</label>
-    <input type="submit" value="Add Note" class="btn">
-    <input type="color" id="bg-color" name="bg-color" value="#494949">
+    
+<form id="form"> 
+    <input class="form-item" type="text" placeholder="Title" name="title" id="title">
+    <textarea  class="form-item" placeholder="Content" name="content" id="content" rows="3" cols="13"></textarea> 
+    <label id="wrapper"><input class="form-item"  type="color" id="bg-color" name="bg-color" value="#494949"></label>
     <label for="bg-color">Background color</label>
+    <input  class="form-item btn" type="submit" value="Add Note" >
+  
     <!-- <input type="color" id="title-color" name="title-color" value="#fff">
     <label for="title-color">Title color</label>
     <input type="color" id="text-color" name="text-color" value="#fff">
@@ -24,7 +24,7 @@
 </form>
 <div class="collection gg"></div>
 
-<button class="clear-notes">Clear Tasks</button>
+<button class="clear-notes btn">Clear Tasks</button>
     <script>
  
 
@@ -37,6 +37,7 @@ const clearBtn = document.querySelector('.clear-notes');
 let title=document.querySelector('#title');
 let content=document.querySelector('#content');
 let bgColor=document.querySelector('#bg-color');
+let wrapper=document.querySelector('#wrapper');
 let submit=document.querySelector('.btn');
 let i=0;
 
@@ -52,8 +53,13 @@ function loadEventListerners(){
     noteList.addEventListener('click',removeNote);
     noteList2.addEventListener('click',pinnNote);
     clearBtn.addEventListener('click', clearNotes);
+   bgColor.addEventListener('change',function(){
+  wrapper.style.backgroundColor=bgColor.value;});
+
 }
 
+
+ 
 
 //get notes from LS
 function getNotes(){
@@ -75,18 +81,22 @@ const text=document.createElement('div');
 text.className='item-text';
 text.appendChild(document.createTextNode(note['content']));
 div.appendChild(text);
+const links= document.createElement('div');
+links.className="links";
+
 const link = document.createElement('a');
 link.className = 'delete-item';
 link.innerHTML='<i class="fas fa-times"></i>';
-div.appendChild(link);
+links.appendChild(link);
 const pinn =document.createElement('a');
 pinn.className="pinn-note";
 pinn.innerHTML='<i class="far fa-star"></i>';
-div.appendChild(pinn);
+links.appendChild(pinn);
+div.appendChild(links);
 noteList.appendChild(div);
 div.style.background=note['color'];
 
-notes.push({title: note['title'], content:note['content'],color:note['color'], ID:note['ID'],pinned:note['pinned']});
+
     })
 
   
@@ -99,7 +109,7 @@ notes.push({title: note['title'], content:note['content'],color:note['color'], I
 
 function newNote(e){
 const div= document.createElement('div');
-div.className=`collection-item item${i}`;
+div.className=`collection-item item${i} `;
 const ttl=document.createElement('h5');
 ttl.className='item-title';
 ttl.appendChild(document.createTextNode(title.value));
@@ -108,20 +118,25 @@ const text=document.createElement('div');
 text.className='item-text';
 text.appendChild(document.createTextNode(content.value));
 div.appendChild(text);
+const links= document.createElement('div');
+links.className="links";
+
 const link = document.createElement('a');
 link.className = 'delete-item';
 link.innerHTML='<i class="fas fa-times"></i>';
-div.appendChild(link);
+links.appendChild(link);
 const pinn =document.createElement('a');
 pinn.className="pinn-note";
 pinn.innerHTML='<i class="far fa-star"></i>';
-div.appendChild(pinn);
+links.appendChild(pinn);
+div.appendChild(links);
 noteList.appendChild(div);
+let pol=bgColor.value;
 div.style.background=bgColor.value;
 
 
 
-notes.push({title: title.value, content:content.value,color:bgColor.value, ID:'item'+i,pinned:false});
+notes.push({title: title.value, content:content.value,color:pol, ID:'item'+i,pinned:false});
 
 storeNoteInLocalStorage(notes[i]);
 title.value='';
@@ -150,10 +165,11 @@ function storeNoteInLocalStorage(note){
 function pinnNote(e){
     if(!notes['pinned']){
        
-    if(e.target.parentElement.parentElement.classList.contains('collection-item')){
+    if(e.target.parentElement.parentElement.parentElement.classList.contains('collection-item')){
        
-   let first = e.target.parentElement.parentElement;
+   let first = e.target.parentElement.parentElement.parentElement;
    let parent = first.parentNode;
+   
    parent.insertBefore(first, parent.firstChild);
     e.target.parentElement.innerHTML='<i class="fas fa-star"></i>';
    }
@@ -162,7 +178,7 @@ function pinnNote(e){
    }
    else{
    
-   let first = e.target.parentElement.parentElement;
+   let first = e.target.parentElement.parentElement.parentElement;
    let parent = first.parentNode;
    parent.insertBefore(first, parent.lastChild);
     e.target.parentElement.innerHTML='<i class="far fa-star"></i>';
@@ -172,9 +188,9 @@ function pinnNote(e){
 
 function removeNote(e){
 if(e.target.parentElement.classList.contains('delete-item')){
-      titleRem=e.target.parentElement.parentElement.classList;
-    if(confirm('re you sure?')){    
-    e.target.parentElement.parentElement.remove(); 
+      titleRem=e.target.parentElement.parentElement.parentElement.classList;
+    if(confirm('Are you sure?')){    
+    e.target.parentElement.parentElement.parentElement.remove(); 
     removeNoteFromLocalStorage(titleRem);
     }
 
@@ -211,6 +227,9 @@ function clearNotes(){
 function clearNotesFromLocalStorage(){
     localStorage.clear();
 }
+
+
+
     </script>
 </body>
 </html>
